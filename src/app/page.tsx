@@ -7,7 +7,6 @@ import { useGlobalStore } from "@/store/global";
 import { useSettingStore } from "@/store/setting";
 
 const Header = dynamic(() => import("@/components/Internal/Header"));
-const Setting = dynamic(() => import("@/components/Setting"));
 const Topic = dynamic(() => import("@/components/Research/Topic"));
 const Feedback = dynamic(() => import("@/components/Research/Feedback"));
 const SearchResult = dynamic(
@@ -20,8 +19,6 @@ const Knowledge = dynamic(() => import("@/components/Knowledge"));
 function Home() {
   const { t } = useTranslation();
   const {
-    openSetting,
-    setOpenSetting,
     openHistory,
     setOpenHistory,
     openKnowledge,
@@ -45,14 +42,8 @@ function Home() {
         <FinalReport />
       </main>
       <footer className="my-4 text-center text-sm text-gray-600 print:hidden">
-        <a href="https://github.com/u14app/" target="_blank">
-          {t("copyright", {
-            name: "U14App",
-          })}
-        </a>
       </footer>
       <aside className="print:hidden">
-        <Setting open={openSetting} onClose={() => setOpenSetting(false)} />
         <History open={openHistory} onClose={() => setOpenHistory(false)} />
         <Knowledge
           open={openKnowledge}

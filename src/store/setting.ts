@@ -78,16 +78,17 @@ interface SettingFunction {
 }
 
 export const defaultValues: SettingStore = {
-  provider: "google",
-  mode: "",
+  provider: "openrouter",
+  mode: "local",
   apiKey: "",
   apiProxy: "",
   thinkingModel: "gemini-2.0-flash-thinking-exp",
   networkingModel: "gemini-2.0-flash-exp",
-  openRouterApiKey: "",
+  openRouterApiKey: process.env.NEXT_PUBLIC_OPENROUTER_API_KEY || "YOUR_OPENROUTER_API_KEY_HERE",
   openRouterApiProxy: "",
-  openRouterThinkingModel: "",
-  openRouterNetworkingModel: "",
+  openRouterThinkingModel: "openai/o3",
+  // openRouterNetworkingModel: "anthropic/claude-sonnet-4",
+  openRouterNetworkingModel: "openai/gpt-4o-2024-11-20",
   openAIApiKey: "",
   openAIApiProxy: "",
   openAIThinkingModel: "gpt-4o",
@@ -148,11 +149,29 @@ export const defaultValues: SettingStore = {
   citationImage: "enable",
 };
 
+// Core AI provider settings that should not be changed in SAAS mode
+const lockedSettings = [
+  'provider',
+  'mode', 
+  'openRouterApiKey',
+  'openRouterThinkingModel',
+  'openRouterNetworkingModel'
+];
+
 export const useSettingStore = create(
   persist<SettingStore & SettingFunction>(
     (set) => ({
       ...defaultValues,
-      update: (values) => set(values),
+      update: (values) => {
+        // Filter out locked settings to prevent changes to core AI configuration
+        const filteredValues = Object.keys(values).reduce((acc, key) => {
+          if (!lockedSettings.includes(key)) {
+            (acc as any)[key] = (values as any)[key];
+          }
+          return acc;
+        }, {} as Partial<SettingStore>);
+        set(filteredValues);
+      },
       reset: () => set(defaultValues),
     }),
     { name: "setting" }
